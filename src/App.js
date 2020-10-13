@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Camera, { FACING_MODES } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
-import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Page, pdfjs } from 'react-pdf';
+import { jsPDF } from "jspdf";
 
-function App (props) {
-  function handleTakePhoto (dataUri) {
-    // Do stuff with the photo...
-    console.log('takePhoto', dataUri);
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+const App = () => {
+  const doc = useRef(new jsPDF());
+  const [pages, setPages] = useState(0);
+  const handleTakePhoto = (dataUri) => {
+    doc.current.addImage(
+      dataUri,
+      'PNG',
+      0,
+      pages * 100,
+      0,
+      100,
+    );
+    setPages(pages + 1);
   }
 
   return (
@@ -15,38 +27,11 @@ function App (props) {
       onTakePhoto = { (dataUri) => { handleTakePhoto(dataUri); } }
       idealFacingMode={FACING_MODES.ENVIRONMENT}
     />
-      <PDFViewer>
-      <MyDocument />
-    </PDFViewer>
+    <Document file={doc.current.output('blob')}>
+      <Page pageNumber={1} />
+    </Document>
     </>
   );
 }
-
-// Create styles
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: 'row',
-    backgroundColor: '#E4E4E4'
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1
-  }
-});
-
-// Create Document Component
-const MyDocument = () => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-        <Text>Section #1</Text>
-      </View>
-      <View style={styles.section}>
-        <Text>Section #2</Text>
-      </View>
-    </Page>
-  </Document>
-);
 
 export default App;
