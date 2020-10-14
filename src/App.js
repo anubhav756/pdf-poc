@@ -32,28 +32,27 @@ const App = () => {
   };
 
   return (
-    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'hidden' }}>
-      <div style={{ position: 'relative', display: 'inline-block' }} ref={cameraRef}>
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }} ref={cameraRef}>
+      {preview ? (
+          <img src={preview} alt="Preview" width="100%" height="100%" />
+        ) : (
+          <Camera
+            isFullscreen
+            isMaxResolution
+            isImageMirror={false}
+            onTakePhotoAnimationDone = {handleTakePhoto}
+            idealFacingMode={FACING_MODES.ENVIRONMENT}
+          />
+      )}
+      <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
         {preview ? (
-            <img src={preview} alt="Preview" />
-          ) : (
-            <Camera
-              isImageMirror={false}
-              onTakePhotoAnimationDone = {handleTakePhoto}
-              idealFacingMode={FACING_MODES.ENVIRONMENT}
-              idealResolution={{ width: window.innerWidth, height: window.innerHeight }}
-            />
+          <>
+            <button onClick={() => savePhoto(false)}>Re-take</button>
+            <button onClick={() => savePhoto(true)}>Next</button>
+          </>
+        ) : (
+          <button onClick={handleSubmit}>Save PDF</button>
         )}
-        <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
-          {preview ? (
-            <>
-              <button onClick={() => savePhoto(false)}>Re-take</button>
-              <button onClick={() => savePhoto(true)}>Next</button>
-            </>
-          ) : (
-            <button onClick={handleSubmit}>Save PDF</button>
-          )}
-        </div>
       </div>
     </div>
   );
