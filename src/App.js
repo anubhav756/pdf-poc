@@ -18,6 +18,9 @@ const App = () => {
       0,
       0,
     );
+
+    if (pages === 30)
+      doc.current.save();
   
     setPages(pages + 1);
   }
