@@ -8,8 +8,13 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 
 const App = () => {
   const [images, setImages] = useState([]);
-  const handleTakePhoto = (dataUri) => setImages([...images, dataUri]);
+  const [preview, setPreview] = useState();
   const cameraRef = useRef();
+  const handleTakePhoto = (dataUri) => setPreview(dataUri)
+  const savePhoto = (accept) => {
+    if (accept) setImages([...images, preview]);
+    setPreview();
+  };
   const handleSubmit = () => {
     const { clientWidth, clientHeight } = cameraRef.current;
     const doc = new jsPDF({
@@ -29,14 +34,25 @@ const App = () => {
   return (
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
       <div style={{ position: 'relative', display: 'inline-block' }} ref={cameraRef}>
-      <Camera
-        isImageMirror={false}
-        onTakePhoto = {handleTakePhoto}
-        idealFacingMode={FACING_MODES.ENVIRONMENT}
-        idealResolution={{ width: window.innerWidth, height: window.innerHeight }}
-      />
+        {preview ? (
+            <img src={preview} alt="Preview" />
+          ) : (
+            <Camera
+              isImageMirror={false}
+              onTakePhotoAnimationDone = {handleTakePhoto}
+              idealFacingMode={FACING_MODES.ENVIRONMENT}
+              idealResolution={{ width: window.innerWidth, height: window.innerHeight }}
+            />
+        )}
         <div style={{ position: 'absolute', bottom: 30, right: 30 }}>
-          <button onClick={handleSubmit}>Submit</button>
+          {preview ? (
+            <>
+              <button onClick={() => savePhoto(false)}>Re-take</button>
+              <button onClick={() => savePhoto(true)}>Next</button>
+            </>
+          ) : (
+            <button onClick={handleSubmit}>Save PDF</button>
+          )}
         </div>
       </div>
     </div>
