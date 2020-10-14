@@ -10,7 +10,7 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [preview, setPreview] = useState();
   const cameraRef = useRef();
-  const handleTakePhoto = (dataUri) => setPreview(dataUri)
+  const handleTakePhoto = (dataUri) => setPreview(dataUri);
   const savePhoto = (accept) => {
     if (accept) setImages([...images, preview]);
     setPreview();
@@ -32,7 +32,7 @@ const App = () => {
   };
 
   return (
-    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'hidden' }}>
       <div style={{ position: 'relative', display: 'inline-block' }} ref={cameraRef}>
         {preview ? (
             <img src={preview} alt="Preview" />
