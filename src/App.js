@@ -21,6 +21,7 @@ const App = () => {
 
     axios.post('http://49.40.64.199:9016/upload', data, {
       onUploadProgress: ({ total, loaded }) => setUploadProgress(Math.round((loaded / total) * 100)),
+      headers: { 'application-id': 'test-123456' }
     })
       .then(res => {
         console.log(res.statusText)
