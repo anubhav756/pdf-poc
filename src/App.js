@@ -9,6 +9,7 @@ const App = () => {
   const [preview, setPreview] = useState();
   const cameraRef = useRef();
   const handleTakePhoto = (dataUri) => setPreview(dataUri);
+  const [uploadProgress, setUploadProgress] = useState();
   const savePhoto = (accept) => {
     if (accept) setImages([...images, preview]);
     setPreview();
@@ -18,11 +19,20 @@ const App = () => {
 
     images.map(dataURIToBlob).forEach((blob) => data.append('file', blob));
 
-    axios.post('http://localhost:3001/upload', data)
+    axios.post('http://49.40.64.199:9016/upload', data, {
+      onUploadProgress: ({ total, loaded }) => setUploadProgress(Math.round((loaded / total) * 100)),
+    })
       .then(res => {
         console.log(res.statusText)
       })
   };
+
+  if (uploadProgress === 100) {
+    return <div>Uploaded Successfully!</div>
+  }
+  if (uploadProgress) {
+    return <div>Uploading... {uploadProgress}%</div>
+  }
 
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }} ref={cameraRef}>
