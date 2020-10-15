@@ -1,10 +1,8 @@
 import React, { useState, useRef } from 'react';
 import Camera, { FACING_MODES } from 'react-html5-camera-photo';
+import axios from 'axios';
 import 'react-html5-camera-photo/build/css/index.css';
-import { pdfjs } from 'react-pdf';
-import { jsPDF } from 'jspdf';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import dataURIToBlob from './utils';
 
 const App = () => {
   const [images, setImages] = useState([]);
@@ -16,19 +14,14 @@ const App = () => {
     setPreview();
   };
   const handleSubmit = () => {
-    const { clientWidth, clientHeight } = cameraRef.current;
-    const doc = new jsPDF({
-      unit: 'px',
-      format: [clientWidth, clientHeight],
-    });
+    const data = new FormData();
 
-    images.forEach((image, i) => {
-      if (i > 0) doc.addPage();
+    images.map(dataURIToBlob).forEach((blob) => data.append('file', blob));
 
-      doc.addImage(image, 'png', 0, 0, clientWidth, clientHeight);
-    });
-
-    doc.save();
+    axios.post('http://localhost:3001/upload', data)
+      .then(res => {
+        console.log(res.statusText)
+      })
   };
 
   return (
